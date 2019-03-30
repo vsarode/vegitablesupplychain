@@ -1,5 +1,5 @@
 """
-WSGI config for vegitablesupplychain project.
+WSGI conf for vegitablesupplychain project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
