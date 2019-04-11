@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+import uuid
+
 from django.db import models
 
 
@@ -17,18 +19,16 @@ class Address(models.Model):
 
 
 class User(models.Model):
-    GENDER = (("MALE", "MALE"),
-              ("FEMALE", "FEMALE"))
-    USERTYPE = (("FARMER","FARMER"),
-                ("HOTEL","HOTEL"))
     username = models.CharField(max_length=255, primary_key=True)
-    fname = models.CharField(max_length=512)
-    mname = models.CharField(max_length=512)
-    lname = models.CharField(max_length=512)
+    password = models.CharField(max_length=1024)
+    created_on = models.DateTimeField(auto_now=True)
+    name = models.CharField(max_length=512)
     mobile = models.CharField(max_length=12)
-    gender = models.CharField(max_length=512, choices=GENDER)
-    usertype = models.CharField(max_length=512, choices=USERTYPE)
+    pan_no = models.CharField(max_length=12)
+    account_no = models.CharField(max_length=15)
+    user_type = models.CharField(max_length=512,)
     address = models.ForeignKey(Address)
+    photo = models.CharField(max_length=1024, null=True)
 
 
 class Farmer(models.Model):
@@ -39,6 +39,14 @@ class Hotel(models.Model):
     user = models.ForeignKey(User)
     hotel_name = models.CharField(max_length=512)
     gst_no = models.CharField(max_length=20, primary_key=True)
+
+
+class Login(models.Model):
+    user = models.ForeignKey(User)
+    token = models.CharField(max_length=70, default=str(uuid.uuid4()), primary_key=True)
+    created_on = models.DateTimeField(auto_now=True)
+    loggedout_time = models.DateTimeField(null=True)
+    is_logged_in = models.BooleanField(default=True)
 
 
 class Category(models.Model):
