@@ -19,12 +19,15 @@ class Address(models.Model):
 class User(models.Model):
     GENDER = (("MALE", "MALE"),
               ("FEMALE", "FEMALE"))
+    USERTYPE = (("FARMER","FARMER"),
+                ("HOTEL","HOTEL"))
     username = models.CharField(max_length=255, primary_key=True)
     fname = models.CharField(max_length=512)
     mname = models.CharField(max_length=512)
     lname = models.CharField(max_length=512)
     mobile = models.CharField(max_length=12)
     gender = models.CharField(max_length=512, choices=GENDER)
+    usertype = models.CharField(max_length=512, choices=USERTYPE)
     address = models.ForeignKey(Address)
 
 
@@ -46,4 +49,17 @@ class Product(models.Model):
     name = models.CharField(max_length=512)
     category = models.ForeignKey(Category)
     default_image = models.CharField(max_length=512, null=True)
+
+class WareHouse(models.Model):
+    name = models.CharField(max_length=254,primary_key=True)
+    address = models.ForeignKey(Address)
+
+
+class FarmerProductDetails(models.Model):
+    user = models.ForeignKey(User)
+    product = models.ForeignKey(Product)
+    quantity = models.IntegerField(max_length=10,null=False)
+    warehouse = models.ForeignKey(WareHouse)
+    min_price = models.FloatField(max_length=10,null=False)
+    max_price = models.FloatField(max_length=10, null=False)
 

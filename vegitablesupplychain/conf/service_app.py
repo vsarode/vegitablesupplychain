@@ -1,5 +1,9 @@
+import django
+django.setup()
 from flask import Flask
 from flask_restful import Api
+
+from vegitablesupplychain.service_apis.user import User
 
 app = Flask(__name__)
 api = Api(app, prefix='/supplychain/')

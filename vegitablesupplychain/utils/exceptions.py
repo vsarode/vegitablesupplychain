@@ -1,4 +1,4 @@
-from sarpanch.conf.error_object import ErrorObject
+from vegitablesupplychain.conf.error_object import ErrorObject
 
 
 class NotFoundException(Exception):
