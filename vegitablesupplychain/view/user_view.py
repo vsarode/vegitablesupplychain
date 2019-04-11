@@ -6,16 +6,22 @@ from vegitablesupplychain.view.base_schema import SchemaRender
 
 class UserView(SchemaRender):
     username = fields.String()
-    fname = fields.String(dump_to="firstName")
-    mname = fields.String(dump_to="middleName")
-    lname = fields.String(dump_to="lastName")
+    fullname = fields.String(dump_to="fullName")
+    account_no = fields.String(dump_to="accountNumber")
+    pan_no = fields.String(dump_to="panNumber")
     usertype = fields.String(dump_to="userType")
     mobile = fields.String()
-    gender = fields.String()
+    photo = fields.String()
     address = fields.Nested(AddressView)
+
 
 class UserNameView(SchemaRender):
     username = fields.String()
+
+
+class FarmerView(SchemaRender):
+    user = fields.Nested(UserView)
+
 
 class HotelUserView(SchemaRender):
     user = fields.Nested(UserView)
