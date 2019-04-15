@@ -125,19 +125,16 @@ def get_addresses_by_username(username):
 
 
 def update_addresses_of_user(username,request_data):
-    addresses = get_addresses_by_username(username)
-    print request_data['addressId']
-    address_obj = get_address_object_by_id(request_data['addressId'])
-    for obj in addresses:
-        if obj.id == address_obj.id:
-            obj.address_line1 = request_data['addressLine1'],
-            obj.address_line2 = request_data['addressLine2'],
-            obj.state = request_data['state'],
-            obj.district = request_data['district'],
-            obj.taluka = request_data['taluka'],
-            obj.village = request_data['village'],
-            obj.pincode = request_data['pincode']
-            obj.save()
+    print request_data
+    obj = get_address_object_by_id(request_data['addressId'])
+    obj.address_line1 = request_data['addressLine1']
+    obj.address_line2 = request_data['addressLine2']
+    obj.state = request_data['state']
+    obj.district = request_data['district']
+    obj.taluka = request_data['taluka']
+    obj.village = request_data['village']
+    obj.pincode = request_data['pincode']
+    obj.save()
     return get_addresses_by_username(username)
 
 

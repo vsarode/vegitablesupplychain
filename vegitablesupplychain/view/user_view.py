@@ -46,6 +46,3 @@ class HotelUserView(SchemaRender):
 class HotelNameView(SchemaRender):
     hotel_name = fields.String(dump_to="hotelName")
     gstn_no = fields.String(dump_to="gstnNumber")
-
-
-
