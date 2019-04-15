@@ -27,7 +27,7 @@ class User(models.Model):
     pan_no = models.CharField(max_length=12)
     account_no = models.CharField(max_length=15)
     user_type = models.CharField(max_length=512, )
-    address = models.ForeignKey(Address)
+    shipping_addresses = models.ManyToManyField(Address)
     photo = models.CharField(max_length=1024, null=True)
 
 
@@ -45,7 +45,7 @@ class Login(models.Model):
     user = models.ForeignKey(User)
     login_token = models.CharField(max_length=70, default=str(uuid.uuid4()),
                                    primary_key=True)
-    created_on = models.DateTimeField(auto_now=True)
+    created_on = models.DateTimeField(auto_now_add=True)
     loggedout_time = models.DateTimeField(null=True)
     is_logged_in = models.BooleanField(default=True)
 
@@ -59,7 +59,7 @@ class Brand(models.Model):
 
 
 class Product(models.Model):
-    product_name = models.CharField(max_length=512)
+    product_name = models.CharField(max_length=255,primary_key=True)
     category = models.ForeignKey(Category)
     brand = models.ForeignKey(Brand)
     default_image = models.CharField(max_length=512, null=True)
@@ -82,7 +82,7 @@ class SellOrders(models.Model):
                                         null=False)
     total_price = models.FloatField(max_length=10, null=False)
     is_shipped = models.BooleanField(default=False)
-    created_on = models.DateTimeField(auto_now=True)
+    created_on = models.DateTimeField(auto_now_add=True)
     shipping_address = models.ForeignKey(Address)
 
 
@@ -95,5 +95,5 @@ class PurchaseOrders(models.Model):
                                         null=False)
     total_price = models.FloatField(max_length=10, null=False)
     is_shipped = models.BooleanField(default=False)
-    created_on = models.DateTimeField(auto_now=True)
+    created_on = models.DateTimeField(auto_now_add=True)
     shipping_address = models.ForeignKey(Address)

@@ -1,9 +1,9 @@
-from vegitablesupplychain.db.supplychainmodels.models import User, Address, \
-    Farmer, Hotel
+from vegitablesupplychain.db.supplychainmodels.models import User, \
+    Farmer, Hotel, Address
 from vegitablesupplychain.utils.exceptions import AlreadyExist, \
     NotFoundException
 from vegitablesupplychain.view.user_view import HotelUserView, FarmerView, \
-    UserView
+    UserView, AddressView
 
 
 def create_user_profile(request_data):
@@ -12,7 +12,6 @@ def create_user_profile(request_data):
         raise AlreadyExist(user)
     except:
         user_type = request_data['userType']
-        print user_type
         if user_type == 'Farmer':
             return Farmer.objects.create(
                 user=create_user_object(request_data))
@@ -24,7 +23,7 @@ def create_user_profile(request_data):
 
 
 def create_user_object(request_data):
-    return User.objects.create(username=request_data['userId'],
+    user_obj = User.objects.create(username=request_data['userId'],
                                password=request_data['password'],
                                pan_no=request_data['panNumber'],
                                account_no=request_data['accountNumber'],
@@ -32,27 +31,14 @@ def create_user_object(request_data):
                                user_type=request_data['userType'],
                                mobile=request_data['mobile'],
                                photo=request_data['photo'],
-                               address=create_address_object(request_data)
                                )
-
-
-def create_address_object(request_data):
-    return Address.objects.create(
-        address_line1=request_data['addressLine1'],
-        address_line2=request_data['addressLine2'],
-        state=request_data['state'],
-        district=request_data['district'],
-        taluka=request_data['taluka'],
-        village=request_data['village'],
-        pincode=request_data['pincode'],
-    )
+    return user_obj
 
 
 def get_user_profile(user_id):
     try:
         user_obj = User.objects.get(username=user_id)
         view = UserView()
-        print view.render(user_obj)
         if user_obj.user_type == "Farmer":
             return Farmer.objects.get(user=user_obj)
         else:
@@ -81,35 +67,87 @@ def get_user_json(user_obj):
 
 def update_farmer_data(username, request_data):
     object = get_user_profile(username)
-    object.user.address.address_line1 = request_data['addressLine1']
-    object.user.address.address_line2 = request_data['addressLine2']
-    object.user.address.state = request_data['state']
-    object.user.address.district = request_data['district']
-    object.user.address.taluka = request_data['taluka']
-    object.user.address.village = request_data['village']
-    object.user.address.pincode = request_data['pincode']
     object.user.password = request_data["password"]
     object.user.mobile = request_data["mobile"]
     object.user.account_no = request_data["accountNumber"]
     object.user.pan_no = request_data["panNumber"]
     object.user.photo = request_data["photo"]
+    update_addresses_of_user(username,request_data)
     object.save()
     return object
 
+
 def update_hotel_data(username, request_data):
     object = get_user_profile(username)
-    object.user.address.address_line1 = request_data['addressLine1']
-    object.user.address.address_line2 = request_data['addressLine2']
-    object.user.address.state = request_data['state']
-    object.user.address.district = request_data['district']
-    object.user.address.taluka = request_data['taluka']
-    object.user.address.village = request_data['village']
-    object.user.address.pincode = request_data['pincode']
     object.user.password = request_data["password"]
     object.user.mobile = request_data["mobile"]
     object.user.account_no = request_data["accountNumber"]
     object.user.pan_no = request_data["panNumber"]
     object.user.photo = request_data["photo"]
     object.hotel_name = request_data["hotelName"]
+    update_addresses_of_user(username, request_data)
     object.save()
     return object
+
+
+def create_address_object(request_data):
+    return Address.objects.create(
+        address_line1=request_data['addressLine1'],
+        address_line2=request_data['addressLine2'],
+        state=request_data['state'],
+        district=request_data['district'],
+        taluka=request_data['taluka'],
+        village=request_data['village'],
+        pincode=request_data['pincode'],
+    )
+
+
+def get_address_json(obj):
+    view = AddressView()
+    return view.render(obj)
+
+
+def get_address_object_by_id(id):
+    try:
+        return Address.objects.get(id=id)
+    except:
+        raise NotFoundException(id)
+
+
+def get_shipping_addresses(addresses):
+    address_list = [get_address_object_by_id(adr.id) for adr in addresses]
+    return address_list
+
+
+def get_addresses_by_username(username):
+    user_obj = get_user_profile(username)
+    return user_obj.user.shipping_addresses.all()
+
+
+def update_addresses_of_user(username,request_data):
+    addresses = get_addresses_by_username(username)
+    print request_data['addressId']
+    address_obj = get_address_object_by_id(request_data['addressId'])
+    for obj in addresses:
+        if obj.id == address_obj.id:
+            obj.address_line1 = request_data['addressLine1'],
+            obj.address_line2 = request_data['addressLine2'],
+            obj.state = request_data['state'],
+            obj.district = request_data['district'],
+            obj.taluka = request_data['taluka'],
+            obj.village = request_data['village'],
+            obj.pincode = request_data['pincode']
+            obj.save()
+    return get_addresses_by_username(username)
+
+
+def update_address(obj,request_data):
+    obj.address_line1 = request_data['addressLine1'],
+    obj.address_line2 = request_data['addressLine2'],
+    obj.state = request_data['state'],
+    obj.district = request_data['district'],
+    obj.taluka = request_data['taluka'],
+    obj.village = request_data['village'],
+    obj.pincode = request_data['pincode']
+    obj.save()
+
