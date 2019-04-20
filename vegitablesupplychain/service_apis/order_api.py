@@ -30,3 +30,9 @@ class PurchaseOrderApi(BaseResource):
             order_obj, request_data)
         order_handler.update_cart_items(order_obj, request_data)
         return order_handler.get_order_json(order_obj)
+
+    def delete(self):
+        token = request.headers.get('token')
+        order_obj = order_handler.get_order_by_token(token)
+        order_obj.delete()
+        return {"Result": "Order canceled"}
