@@ -6,9 +6,10 @@ from vegitablesupplychain.service_apis_handler import user_handler, \
     login_handler
 from vegitablesupplychain.utils.exceptions import UnauthorisedException, \
     BadRequest
+from vegitablesupplychain.utils.resource import BaseResource
 
 
-class LoginApi(Resource):
+class LoginApi(BaseResource):
     def post(self):
         bodyprams = request.get_json()
         user_object = user_handler.get_user_profile(bodyprams['username'])
