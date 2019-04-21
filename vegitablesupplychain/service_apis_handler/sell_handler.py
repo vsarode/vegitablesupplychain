@@ -1,23 +1,23 @@
-from vegitablesupplychain.db.supplychainmodels.models import PurchaseOrders, \
-    CartItem
+from vegitablesupplychain.db.supplychainmodels.models import CartItem, \
+    SellOrders
 from vegitablesupplychain.service_apis_handler import product_handler, \
     user_handler, login_handler
 from vegitablesupplychain.utils.exceptions import NotFoundException
-from vegitablesupplychain.view.order_view import PurchaseOrderView
+from vegitablesupplychain.view.order_view import SellOrderView
 
 
-def place_purchase_order(request_data):
+def place_sell_order(request_data):
     if 'userId' in request_data:
-        hotel_obj = user_handler.get_user_profile(request_data['userId'])
+        farmer_obj = user_handler.get_user_profile(request_data['userId'])
     elif 'token' in request_data:
-        hotel_obj = login_handler.get_user_object_by_token(
+        farmer_obj = login_handler.get_user_object_by_token(
             request_data['token'])
-
-    order_obj = PurchaseOrders.objects.create(hotel=hotel_obj,
-                                              total_price=request_data[
-                                                  'totalPrice'],
-                                              shipping_address=user_handler.get_address_object_by_id(
-                                                  request_data['addressId']))
+    # print user_handler.get_user_json(farmer_obj)
+    order_obj = SellOrders.objects.create(farmer=farmer_obj,
+                                          total_price=request_data[
+                                              'totalPrice'],
+                                          shipping_address=user_handler.get_address_object_by_id(
+                                              request_data['addressId']))
     map(lambda cart_item: order_obj.cart_items.add(cart_item),
         create_cart_with_items(request_data))
     # for cart_item in create_cart_with_items(request_data):
@@ -45,29 +45,29 @@ def create_cart_item(item):
 
 
 def get_order_json(order_obj):
-    view = PurchaseOrderView()
+    view = SellOrderView()
     return view.render(order_obj)
 
 
 def get_order_by_username(username):
     try:
         obj = user_handler.get_user_profile(username)
-        return PurchaseOrders.objects.filter(
-            hotel=obj)
+        return SellOrders.objects.filter(
+            farmer=obj)
     except:
         raise NotFoundException()
 
 
 def get_order_by_filter(criteria={}):
     try:
-        return PurchaseOrders.objects.filter(**criteria)
+        return SellOrders.objects.filter(**criteria)
     except:
         raise NotFoundException()
 
 
 def get_order_by_token(token):
     try:
-        return PurchaseOrders.objects.get(purchase_order_token=token)
+        return SellOrders.objects.get(sell_order_token=token)
     except:
         raise NotFoundException()
 

@@ -18,7 +18,7 @@ class UserView(SchemaRender):
     fullname = fields.String(dump_to="fullName")
     account_no = fields.String(dump_to="accountNumber")
     pan_no = fields.String(dump_to="panNumber")
-    usertype = fields.String(dump_to="userType")
+    user_type = fields.String(dump_to="userType")
     mobile = fields.String()
     photo = fields.String()
     shipping_addresses = fields.Method('get_addresses',dump_to="shippingAddresses")
