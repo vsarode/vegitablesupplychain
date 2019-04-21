@@ -1,7 +1,7 @@
 from vegitablesupplychain.db.supplychainmodels.models import User, \
     Farmer, Hotel, Address
 from vegitablesupplychain.utils.exceptions import AlreadyExist, \
-    NotFoundException
+    NotFoundException, UnauthorisedException
 from vegitablesupplychain.view.user_view import HotelUserView, FarmerView, \
     UserView, AddressView
 
@@ -44,7 +44,7 @@ def get_user_profile(user_id):
         else:
             return Hotel.objects.get(user=user_obj)
     except:
-        raise NotFoundException(user_id)
+        raise UnauthorisedException()
 
 
 def get_hotel_user_by_filter(criteria={}):
