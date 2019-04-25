@@ -22,7 +22,7 @@ def place_purchase_order(request_data):
 def post_purchase_order_action(cart_obj):
     for item in cart_obj.cart_items.all():
         try:
-            sell_obj = SellOrders.objects.get(id=item.sell_order.id)
+            sell_obj = SellOrders.objects.get(sell_order_token=item.sell_order.sell_order_token)
             sell_obj.quantity -= item.quantity
             sell_obj.save()
             if sell_obj.quantity == 0:
@@ -51,7 +51,7 @@ def get_order_json(order_obj):
 
 def get_order_by_username(username):
     try:
-        obj = user_handler.get_hotel_by_user_id(username)
+        obj = user_handler.get_user_profile(username)
         return PurchaseOrders.objects.filter(
             hotel=obj)
     except:
