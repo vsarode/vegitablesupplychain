@@ -26,7 +26,6 @@ class User(models.Model):
     mobile = models.CharField(max_length=12)
     pan_no = models.CharField(max_length=12)
     account_no = models.CharField(max_length=15)
-    user_type = models.CharField(max_length=512, )
     shipping_addresses = models.ManyToManyField(Address)
     photo = models.CharField(max_length=1024, null=True)
 
@@ -59,7 +58,7 @@ class Brand(models.Model):
 
 
 class Product(models.Model):
-    product_name = models.CharField(max_length=255,primary_key=True)
+    product_name = models.CharField(max_length=255)
     category = models.ForeignKey(Category)
     brand = models.ForeignKey(Brand)
     default_image = models.CharField(max_length=512, null=True)
@@ -67,23 +66,33 @@ class Product(models.Model):
     price = models.FloatField(max_length=10, null=False)
 
 
-class CartItem(models.Model):
-    product = models.ForeignKey(Product)
-    price = models.FloatField(max_length=10, null=False)
-    quantity = models.IntegerField(max_length=10, null=False)
-
-
 class SellOrders(models.Model):
     sell_order_token = models.CharField(max_length=70,
                                         default=str(uuid.uuid4()),
                                         primary_key=True)
     farmer = models.ForeignKey(Farmer)
-    cart_items = models.ManyToManyField("CartItem", related_name="sell_items",
-                                        null=False)
-    total_price = models.FloatField(max_length=10, null=False)
+    product = models.ForeignKey(Product)
+    quantity = models.IntegerField(default=1)
+    total_price = models.FloatField()
+    product_image = models.CharField(max_length=512)
+    order_status = models.CharField(max_length=10,default=str('In Stock'))
     is_shipped = models.BooleanField(default=False)
     created_on = models.DateTimeField(auto_now_add=True)
     shipping_address = models.ForeignKey(Address)
+
+
+class CartItem(models.Model):
+    sell_order = models.ForeignKey(SellOrders)
+    price = models.FloatField()
+    quantity = models.IntegerField(default=1)
+
+
+class Cart(models.Model):
+    hotel = models.ForeignKey(Hotel)
+    cart_items = models.ManyToManyField(CartItem)
+    created_on = models.DateTimeField(auto_now_add=True)
+    total_item_price = models.FloatField()
+    is_active = models.BooleanField(default=True)
 
 
 class PurchaseOrders(models.Model):
@@ -91,8 +100,7 @@ class PurchaseOrders(models.Model):
                                             default=str(uuid.uuid4()),
                                             primary_key=True)
     hotel = models.ForeignKey(Hotel)
-    cart_items = models.ManyToManyField("CartItem", related_name="purchase_items",
-                                        null=False)
+    cart = models.ForeignKey(Cart)
     total_price = models.FloatField(max_length=10, null=False)
     is_shipped = models.BooleanField(default=False)
     created_on = models.DateTimeField(auto_now_add=True)

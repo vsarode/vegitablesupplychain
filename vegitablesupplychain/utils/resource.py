@@ -7,7 +7,7 @@ from flask_restful import Resource
 
 from vegitablesupplychain.conf.error_object import ErrorObject
 from vegitablesupplychain.utils.exceptions import UnauthorisedException, \
-    ValidationException, NotFoundException, GenericCustomException
+    ValidationException, NotFoundException, GenericCustomException, AlreadyExist
 
 
 def sanitize_response(response):
@@ -44,6 +44,7 @@ def format_response(func):
         message = "Operation Successful"
         is_successful = True
         if isinstance(data, ErrorObject):
+            print data.__dict__
             status = data.errorCode
             message = data.errorMessage
             data = {}
@@ -113,6 +114,8 @@ def handle_validation_exception(func):
             end = datetime.now()
             print "API request took {}".format(end - start)
             return e.errorObject
+        except AlreadyExist as land:
+            return land.errorObject
         except Exception as ex:
             print "uncaught exception"
             print ex.message

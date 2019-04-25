@@ -34,6 +34,11 @@ class AddressApi(BaseResource):
                 "shippingAddresses": [user_handler.get_address_json(adr) for
                                       adr
                                       in addresses]}
+        address_id = request.headers.get('addressId')
+        if address_id:
+            address_obj = user_handler.get_address_object_by_id(address_id)
+            return address_obj
+
 
     def put(self, username=None):
         request_data = request.get_json(force=True)

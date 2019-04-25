@@ -1,23 +1,38 @@
-from flask import request
+import os
 
+import copy
+from flask import request
+from flask_restful import Resource
+from werkzeug.utils import secure_filename
+
+from vegitablesupplychain.constants import file_path
+from vegitablesupplychain.db.supplychainmodels.models import Farmer
 from vegitablesupplychain.service_apis_handler import user_handler
+from vegitablesupplychain.utils.exceptions import AlreadyExist
 from vegitablesupplychain.utils.resource import BaseResource
 
 
 class UserApi(BaseResource):
     def post(self):
-        request_data = request.get_json(force=True)
-        user_object = user_handler.create_user_profile(request_data)
-        if user_object.user.user_type == "Farmer":
-            print user_object
+        request_data = request.form.to_dict()
+        if user_handler.check_user_exist(request_data):
+            raise AlreadyExist(entity='User')
+        file = request.files['file']
+        if file:
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(file_path.FILE_PATH, filename))
+        request_data['profilePic'] = filename
+        user_object, type = user_handler.create_user_profile(request_data)
+        if isinstance(user_object,Farmer):
             return user_handler.get_user_json(user_object)
         else:
             return user_handler.get_hotel_user_json(user_object)
 
+
     def get(self, username=None):
         if username:
             user_object = user_handler.get_user_profile(username)
-            if user_object.user.user_type == "Farmer":
+            if isinstance(user_object,Farmer):
                 return user_handler.get_user_json(user_object)
             else:
                 return user_handler.get_hotel_user_json(user_object)
@@ -33,39 +48,18 @@ class UserApi(BaseResource):
                               hotel_obj in
                               user_handler.get_hotel_user_by_filter(
                                   req_filter)]}
-        if ('userType', 'pincode') in criteria:
-            req_filter['user_type'] = criteria['userType']
-            req_filter['address__pincode'] = criteria['pincode']
-            if criteria['userType'] == "Farmer":
-                return {
-                    "Users": [user_handler.get_user_json(user_obj) for user_obj
-                              in
-                              user_handler.get_user_by_filter(req_filter)]}
-            else:
-                return {
-                    "Users": [user_handler.get_hotel_user_json(user_obj) for
-                              user_obj
-                              in
-                              user_handler.get_user_by_filter(req_filter)]}
-        if 'userType' in criteria:
-            req_filter['user_type'] = criteria['userType']
-            if criteria['userType'] == "Farmer":
-                return {
-                    "Users": [user_handler.get_user_json(user_obj) for user_obj
-                              in
-                              user_handler.get_user_by_filter(req_filter)]}
-            else:
-                return {
-                    "Users": [user_handler.get_hotel_user_json(user_obj) for
-                              user_obj
-                              in
-                              user_handler.get_user_by_filter(req_filter)]}
 
     def put(self, username):
-        request_data = request.get_json(force=True)
-        if request_data['userType'] == "Farmer":
-            user_object = user_handler.update_farer_data(username, request_data)
+        file = request.files['file']
+        if file:
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(file_path.FILE_PATH, filename))
+        request_data = request.form.to_dict()
+        request_data['profilePic'] = filename
+        user_object = user_handler.get_user_profile(username)
+        if isinstance(user_object,Farmer):
+            user_object = user_handler.update_farmer_data(user_object, request_data)
             return user_handler.get_user_json(user_object)
         else:
-            user_object = user_handler.update_hotel_data(username, request_data)
+            user_object = user_handler.update_hotel_data(user_object, request_data)
             return user_handler.get_hotel_user_json(user_object)

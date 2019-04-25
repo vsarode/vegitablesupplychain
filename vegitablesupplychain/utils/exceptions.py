@@ -53,6 +53,7 @@ class AlreadyExist(Exception):
                 entity + " Already Exists"))
 
     def __str__(self):
+        print "error====>", self.errorObject.__dict__
         return str(self.errorObject.errorMessage)
 
 

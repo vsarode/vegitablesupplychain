@@ -2,6 +2,7 @@ from datetime import datetime
 from flask import request
 from flask_restful import Resource
 
+from vegitablesupplychain.db.supplychainmodels.models import Farmer
 from vegitablesupplychain.service_apis_handler import user_handler, \
     login_handler
 from vegitablesupplychain.utils.exceptions import UnauthorisedException, \
@@ -22,7 +23,7 @@ class LoginApi(BaseResource):
     def get(self, token):
         if token:
             user_object = login_handler.get_user_object_by_token(token)
-            if user_object.user.user_type == 'Farmer':
+            if isinstance(user_object,Farmer):
                 return user_handler.get_user_json(user_object)
             else:
                 return user_handler.get_hotel_user_json(user_object)

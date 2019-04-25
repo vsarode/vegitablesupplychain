@@ -1,26 +1,37 @@
-from flask import request
+import os
 
-from vegitablesupplychain.db.supplychainmodels.models import SellOrders
+from flask import request
+from werkzeug.utils import secure_filename
+
+from vegitablesupplychain.constants import file_path
+from vegitablesupplychain.db.supplychainmodels.models import SellOrders, Farmer
 from vegitablesupplychain.service_apis_handler import sell_handler, user_handler
+from vegitablesupplychain.utils.exceptions import AlreadyExist
 from vegitablesupplychain.utils.resource import BaseResource
 
 
 class SellOrderApi(BaseResource):
     def post(self):
-        request_data = request.get_json(force=True)
+        request_data = request.form.to_dict()
+        file = request.files['file']
+        if file:
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(file_path.FILE_PATH, filename))
+        request_data['productPic'] = filename
         order = sell_handler.place_sell_order(request_data)
         return sell_handler.get_order_json(order)
 
-    def get(self, username=None):
-        if username:
+    def get(self, username):
+        user_object = user_handler.get_user_profile(username)
+        if isinstance(user_object,Farmer):
             orders = sell_handler.get_order_by_username(username)
             return {
-                "SellOrders": [sell_handler.get_order_json(order) for order
-                               in orders]}
-        token = request.headers.get('token')
-        if token:
-            order_obj = sell_handler.get_order_by_token(token)
-            return sell_handler.get_order_json(order_obj)
+                 "SellOrders": [sell_handler.get_order_json(order) for order
+                                in orders]}
+        else:
+            orders = sell_handler.get_in_stock_products()
+            return {"Products":[sell_handler.get_order_json(order) for order
+                                in orders]}
 
     def put(self):
         request_data = request.get_json(force=True)

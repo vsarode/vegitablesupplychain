@@ -1,48 +1,48 @@
 from vegitablesupplychain.db.supplychainmodels.models import PurchaseOrders, \
-    CartItem
+    CartItem, SellOrders
 from vegitablesupplychain.service_apis_handler import product_handler, \
-    user_handler, login_handler
+    user_handler, login_handler, cart_handler
 from vegitablesupplychain.utils.exceptions import NotFoundException
 from vegitablesupplychain.view.order_view import PurchaseOrderView
 
 
 def place_purchase_order(request_data):
-    if 'userId' in request_data:
-        hotel_obj = user_handler.get_user_profile(request_data['userId'])
-    elif 'token' in request_data:
-        hotel_obj = login_handler.get_user_object_by_token(
-            request_data['token'])
+    hotel_obj = user_handler.get_user_profile(request_data['userId'])
+    cart_obj = cart_handler.get_cart_for_hotel(hotel_obj.user.username)
 
-    order_obj = PurchaseOrders.objects.create(hotel=hotel_obj,
+    purchase_order_obj = PurchaseOrders.objects.create(hotel=hotel_obj,cart=cart_obj,
                                               total_price=request_data[
                                                   'totalPrice'],
                                               shipping_address=user_handler.get_address_object_by_id(
                                                   request_data['addressId']))
-    map(lambda cart_item: order_obj.cart_items.add(cart_item),
-        create_cart_with_items(request_data))
-    # for cart_item in create_cart_with_items(request_data):
-    #     order_obj.add(cart_item)
-    order_obj.save()
-    return order_obj
+    post_purchase_order_action(cart_obj)
+    return purchase_order_obj
 
 
-def create_cart_with_items(request_data):
-    cart_items = request_data['cartItems']
-    items_obj = [create_cart_item(cart_items.get(item)) for item in cart_items]
-    return items_obj
+def post_purchase_order_action(cart_obj):
+    for item in cart_obj.cart_items.all():
+        try:
+            sell_obj = SellOrders.objects.get(id=item.sell_order.id)
+            sell_obj.quantity -= item.quantity
+            sell_obj.save()
+            if sell_obj.quantity == 0:
+                sell_obj.order_status = 'Sold Out'
+                sell_obj.save()
+        except:
+            raise NotFoundException(entity='Product')
 
 
-def update_cart_items(order_obj, request_data):
-    order_obj.cart_items.clear()
-    order_obj.cart_items.add(*create_cart_with_items(request_data))
-
-
-def create_cart_item(item):
-    return CartItem.objects.create(
-        product=product_handler.get_product_by_name(item['productName']),
-        quantity=item['quantity'],
-        price=item['price'])
-
+def delete_purchase_order_action(order_obj):
+    cart_obj = order_obj.cart
+    for item in cart_obj.cart_items.all():
+        try:
+            sell_obj = SellOrders.objects.get(id=item.sell_order.id)
+            if sell_obj.quantity == 0:
+                sell_obj.order_status = 'In Stock'
+            sell_obj.quantity += item.quantity
+            sell_obj.save()
+        except:
+            raise NotFoundException(entity='Product')
 
 def get_order_json(order_obj):
     view = PurchaseOrderView()
@@ -51,25 +51,25 @@ def get_order_json(order_obj):
 
 def get_order_by_username(username):
     try:
-        obj = user_handler.get_user_profile(username)
+        obj = user_handler.get_hotel_by_user_id(username)
         return PurchaseOrders.objects.filter(
             hotel=obj)
     except:
-        raise NotFoundException()
+        raise NotFoundException(entity='Order')
 
 
 def get_order_by_filter(criteria={}):
     try:
         return PurchaseOrders.objects.filter(**criteria)
     except:
-        raise NotFoundException()
+        raise NotFoundException(entity='Order')
 
 
 def get_order_by_token(token):
     try:
         return PurchaseOrders.objects.get(purchase_order_token=token)
     except:
-        raise NotFoundException()
+        raise NotFoundException(entity='Order')
 
 
 def update_shipping_address(order_obj, request_data):

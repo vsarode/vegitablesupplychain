@@ -11,6 +11,7 @@ class BrandView(SchemaRender):
 
 
 class ProductView(SchemaRender):
+    id = fields.Integer(dump_to='productId')
     product_name = fields.String(dump_to="productName")
     category = fields.Nested(CategoryView)
     brand = fields.Nested(BrandView)

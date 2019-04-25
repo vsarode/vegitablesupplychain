@@ -44,7 +44,14 @@ def get_product_by_name(product_name):
     try:
         return Product.objects.get(product_name=product_name)
     except:
-        raise NotFoundException(product_name)
+        raise NotFoundException(entity='Product')
+
+
+def get_product_by_id(product_id):
+    try:
+        return Product.objects.get(id=product_id)
+    except:
+        raise NotFoundException(entity='Product')
 
 
 def get_product_by_filter(criteria={}):
