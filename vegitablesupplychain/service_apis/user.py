@@ -22,7 +22,7 @@ class UserApi(BaseResource):
             filename = secure_filename(file.filename)
             file.save(os.path.join(file_path.FILE_PATH, filename))
         request_data['profilePic'] = filename
-        user_object, type = user_handler.create_user_profile(request_data)
+        user_object = user_handler.create_user_profile(request_data)
         if isinstance(user_object,Farmer):
             return user_handler.get_user_json(user_object)
         else:

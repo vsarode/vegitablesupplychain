@@ -20,10 +20,10 @@ api = Api(app, prefix='/supplychain/')
 api.add_resource(UserApi, 'user','user/<username>')
 api.add_resource(LoginApi, 'login','login/<token>')
 api.add_resource(ProductApi, 'product','product/<product_name>')
-api.add_resource(PurchaseOrderApi, 'order','order/<username>')
-api.add_resource(SellOrderApi, 'sell','sell/<username>')
+api.add_resource(PurchaseOrderApi, 'order','order/<order_token>')
+api.add_resource(SellOrderApi, 'sell','sell/<sale_order_id>')
 api.add_resource(Cart, 'cart','cart/<username>')
-api.add_resource(AddressApi, 'address','address/<username>')
+api.add_resource(AddressApi, 'address','address/<id>')
 
 
 if __name__ == '__main__':

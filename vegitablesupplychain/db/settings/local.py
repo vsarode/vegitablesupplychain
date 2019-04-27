@@ -64,7 +64,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'vegitableDb',
         'USER': 'root',
-        'PASSWORD': 'mutex',
+        'PASSWORD': 'tiger',
         'HOST': 'localhost',
         'PORT': '',
     }

@@ -1,3 +1,5 @@
+import uuid
+
 from vegitablesupplychain.db.supplychainmodels.models import CartItem, \
     SellOrders
 from vegitablesupplychain.service_apis_handler import product_handler, \
@@ -9,6 +11,7 @@ from vegitablesupplychain.view.order_view import SellOrderView
 def place_sell_order(request_data):
     farmer_obj = user_handler.get_user_profile(request_data['userId'])
     order_obj = SellOrders.objects.create(farmer=farmer_obj,
+                                          sell_order_token=uuid.uuid4(),
                                           product=product_handler.get_product_by_id(request_data['productId']),
                                           quantity=request_data['quantity'],
                                           product_image=request_data['productPic'],
@@ -28,8 +31,9 @@ def get_order_json(order_obj):
 def get_order_by_username(username):
     try:
         obj = user_handler.get_user_profile(username)
-        return SellOrders.objects.filter(
-            farmer=obj)
+        sale_orders = SellOrders.objects.filter(farmer=obj)
+        print sale_orders
+        return sale_orders
     except:
         raise NotFoundException(entity='Order')
 

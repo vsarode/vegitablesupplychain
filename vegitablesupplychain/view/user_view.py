@@ -15,18 +15,21 @@ class AddressView(SchemaRender):
     pincode = fields.String()
 
 
-class UserView(SchemaRender):
+class UserBasic(SchemaRender):
     username = fields.String()
     fullname = fields.String(dump_to="fullName")
-    account_no = fields.String(dump_to="accountNumber")
-    pan_no = fields.String(dump_to="panNumber")
     mobile = fields.String()
     photo = fields.Method('get_profile_pic_url', dump_to='photo')
-    shipping_addresses = fields.Method('get_addresses',
-                                       dump_to="shippingAddresses")
 
     def get_profile_pic_url(self, obj):
         return '/data/' + obj.photo
+
+class UserView(UserBasic):
+    account_no = fields.String(dump_to="accountNumber")
+    pan_no = fields.String(dump_to="panNumber")
+    shipping_addresses = fields.Method('get_addresses',
+                                       dump_to="shippingAddresses")
+
 
     def get_addresses(self, obj):
         addresses = obj.shipping_addresses.all()
@@ -39,7 +42,7 @@ class UserNameView(SchemaRender):
 
 
 class FarmerView(SchemaRender):
-    user = fields.Nested(UserView)
+    user = fields.Nested(UserBasic)
 
 
 class HotelUserView(SchemaRender):
@@ -51,3 +54,12 @@ class HotelUserView(SchemaRender):
 class HotelNameView(SchemaRender):
     hotel_name = fields.String(dump_to="hotelName")
     gstn_no = fields.String(dump_to="gstnNumber")
+
+
+if __name__ == '__main__':
+    import json
+    view = UserBasic()
+    import django; django.setup()
+    from vegitablesupplychain.db.supplychainmodels.models import User
+    user = User.objects.get(username='test5@mail.com')
+    print json.dumps(view.render(user))

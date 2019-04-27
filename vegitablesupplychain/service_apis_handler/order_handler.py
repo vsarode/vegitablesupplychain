@@ -36,7 +36,7 @@ def delete_purchase_order_action(order_obj):
     cart_obj = order_obj.cart
     for item in cart_obj.cart_items.all():
         try:
-            sell_obj = SellOrders.objects.get(id=item.sell_order.id)
+            sell_obj = SellOrders.objects.get(sell_order_token=item.sell_order.sell_order_token)
             if sell_obj.quantity == 0:
                 sell_obj.order_status = 'In Stock'
             sell_obj.quantity += item.quantity

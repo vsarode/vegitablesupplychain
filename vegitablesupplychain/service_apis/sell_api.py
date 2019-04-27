@@ -21,9 +21,12 @@ class SellOrderApi(BaseResource):
         order = sell_handler.place_sell_order(request_data)
         return sell_handler.get_order_json(order)
 
-    def get(self, username):
+    def get(self):
+        data = request.args
+        username =data['userId']
         user_object = user_handler.get_user_profile(username)
-        if isinstance(user_object,Farmer):
+        if isinstance(user_object, Farmer):
+            print "farmer*****"
             orders = sell_handler.get_order_by_username(username)
             return {
                  "SellOrders": [sell_handler.get_order_json(order) for order
@@ -33,19 +36,18 @@ class SellOrderApi(BaseResource):
             return {"Products":[sell_handler.get_order_json(order) for order
                                 in orders]}
 
-    def put(self):
-        request_data = request.get_json(force=True)
-        token = request.headers.get('token')
-        order_obj = sell_handler.get_order_by_token(token)
-        order_obj.farmer = user_handler.get_user_profile(request_data['userId'])
-        order_obj.total_price = request_data['totalPrice']
-        order_obj.shipping_address = sell_handler.update_shipping_address(
-            order_obj, request_data)
-        sell_handler.update_cart_items(order_obj, request_data)
-        return sell_handler.get_order_json(order_obj)
+    # def put(self):
+    #     request_data = request.get_json(force=True)
+    #     token = request.headers.get('token')
+    #     order_obj = sell_handler.get_order_by_token(token)
+    #     order_obj.farmer = user_handler.get_user_profile(request_data['userId'])
+    #     order_obj.total_price = request_data['totalPrice']
+    #     order_obj.shipping_address = sell_handler.update_shipping_address(
+    #         order_obj, request_data)
+    #     sell_handler.update_cart_items(order_obj, request_data)
+    #     return sell_handler.get_order_json(order_obj)
 
-    def delete(self):
-        token = request.headers.get('token')
-        order_obj = sell_handler.get_order_by_token(token)
+    def delete(self, sale_order_id):
+        order_obj = sell_handler.get_order_by_token(sale_order_id)
         order_obj.delete()
         return {"Result": "Order canceled"}

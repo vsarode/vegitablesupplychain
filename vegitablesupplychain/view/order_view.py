@@ -6,6 +6,7 @@ from vegitablesupplychain.view.user_view import HotelNameView, AddressView
 
 
 class CartItemView(SchemaRender):
+    id = fields.Integer()
     sell_order = fields.Nested(SellOrderView, dump_to="productDetails")
     price = fields.Float()
     quantity = fields.Integer()

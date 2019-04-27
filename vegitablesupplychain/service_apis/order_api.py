@@ -11,7 +11,9 @@ class PurchaseOrderApi(BaseResource):
         return order_handler.get_order_json(order_obj)
 
 
-    def get(self, username):
+    def get(self):
+        data = request.args
+        username = data['userId']
         orders = order_handler.get_order_by_username(username)
         return {
                 "PurchaseOrders": [order_handler.get_order_json(order) for order

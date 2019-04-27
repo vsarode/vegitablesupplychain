@@ -21,15 +21,18 @@ def check_user_exist(request_data):
 
 
 def create_user_profile(request_data):
-    user_type = request_data['userType']
-    if user_type == 'Farmer':
-        return Farmer.objects.create(
-            user=create_user_object(request_data))
-    else:
-        return Hotel.objects.create(user=create_user_object(request_data),
-                                    hotel_name=request_data['hotelName'],
-                                    gstn_no=request_data['gstnNumber'])
-
+    print "hello"
+    try:
+        user_type = request_data['userType']
+        if user_type == 'Farmer':
+            return Farmer.objects.create(
+                user=create_user_object(request_data))
+        else:
+            return Hotel.objects.create(user=create_user_object(request_data),
+                                        hotel_name=request_data['hotelName'],
+                                        gstn_no=request_data['gstnNumber'])
+    except Exception as e:
+        print e
 
 def create_user_object(request_data):
     user_obj, created = User.objects.get_or_create(
@@ -153,8 +156,8 @@ def get_addresses_by_username(username):
     return user_obj.user.shipping_addresses.all()
 
 
-def update_addresses_of_user(username, request_data):
-    obj = get_address_object_by_id(request_data['addressId'])
+def update_address_of_user(id, request_data):
+    obj = get_address_object_by_id(id)
     obj.address_line1 = request_data['addressLine1']
     obj.address_line2 = request_data['addressLine2']
     obj.state = request_data['state']
@@ -163,4 +166,4 @@ def update_addresses_of_user(username, request_data):
     obj.village = request_data['village']
     obj.pincode = request_data['pincode']
     obj.save()
-    return get_addresses_by_username(username)
+    return obj

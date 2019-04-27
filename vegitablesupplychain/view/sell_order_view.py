@@ -1,5 +1,6 @@
 from marshmallow import fields
-
+import django; django.setup()
+from vegitablesupplychain.db.supplychainmodels.models import SellOrders
 from vegitablesupplychain.view.base_schema import SchemaRender, DateTimeEpoch
 from vegitablesupplychain.view.product_view import ProductView
 from vegitablesupplychain.view.user_view import AddressView, FarmerView
@@ -15,3 +16,9 @@ class SellOrderView(SchemaRender):
     is_shipped = fields.Boolean(dump_to="isShipped")
     created_on = DateTimeEpoch(dump_to="createdOn")
     shipping_address = fields.Nested(AddressView, dump_to="shippingAddress")
+
+if __name__ == '__main__':
+    sale_order = SellOrders.objects.first()
+    view = SellOrderView()
+    import json
+    print json.dumps(view.render(sale_order))
