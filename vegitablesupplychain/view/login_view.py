@@ -19,7 +19,10 @@ class LoginView(SchemaRender):
             user_id=obj.user.username) else 'Hotel'
 
     def get_cart(self, obj):
-        hotel = Hotel.objects.get(user_id=obj.user_id)
+        try:
+            hotel = Hotel.objects.get(user_id=obj.user_id)
+        except:
+            return 0
         cart = Cart.objects.filter(hotel=hotel, is_active=True)
         if cart:
             return cart[0].cart_items.all().count()
