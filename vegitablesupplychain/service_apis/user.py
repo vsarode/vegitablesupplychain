@@ -55,12 +55,18 @@ class UserApi(BaseResource):
                                   req_filter)]}
 
     def put(self, username):
-        file = request.files['file']
-        if file:
-            filename = secure_filename(file.filename)
-            file.save(os.path.join(file_path.FILE_PATH, filename))
+        profile_pic = None
+        try:
+            file = request.files['file']
+            if file:
+                filename = secure_filename(file.filename)
+                file.save(os.path.join(file_path.FILE_PATH, filename))
+            profile_pic=filename
+        except:
+            pass
         request_data = request.form.to_dict()
-        request_data['profilePic'] = filename
+        if profile_pic:
+            request_data['profilePic'] = filename
         user_object = user_handler.get_user_profile(username)
         if isinstance(user_object, Farmer):
             user_object = user_handler.update_farmer_data(user_object,

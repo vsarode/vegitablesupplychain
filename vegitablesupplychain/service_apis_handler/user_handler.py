@@ -87,23 +87,34 @@ def get_user_by_filter(criteria={}):
 
 
 def update_farmer_data(object, request_data):
-    object.user.password = request_data["password"]
-    object.user.mobile = request_data["mobile"]
-    object.user.account_no = request_data["accountNumber"]
-    object.user.pan_no = request_data["panNumber"]
-    object.user.photo = request_data["profilePic"]
+    if 'password' in request_data:
+        object.user.password = request_data["password"]
+    if 'mobile' in request_data:
+        object.user.mobile = request_data["mobile"]
+    if 'accountNumber' in request_data:
+        object.user.account_no = request_data["accountNumber"]
+    if 'panNumber' in request_data:
+        object.user.pan_no = request_data["panNumber"]
+    if 'profilePic' in request_data:
+        object.user.photo = request_data["profilePic"]
     # update_addresses_of_user(username, request_data)
     object.user.save()
     return object
 
 
 def update_hotel_data(object, request_data):
-    object.user.password = request_data["password"]
-    object.user.mobile = request_data["mobile"]
-    object.user.account_no = request_data["accountNumber"]
-    object.user.pan_no = request_data["panNumber"]
-    object.user.photo = request_data["profilePic"]
-    object.hotel_name = request_data["hotelName"]
+    if 'password' in request_data:
+        object.user.password = request_data["password"]
+    if 'mobile' in request_data:
+        object.user.mobile = request_data["mobile"]
+    if 'accountNumber' in request_data:
+        object.user.account_no = request_data["accountNumber"]
+    if 'panNumber' in request_data:
+        object.user.pan_no = request_data["panNumber"]
+    if 'profilePic' in request_data:
+        object.user.photo = request_data["profilePic"]
+    if 'hotelName' in request_data:
+        object.hotel_name = request_data["hotelName"]
     # update_addresses_of_user(username, request_data)
     object.user.save()
     object.save()
