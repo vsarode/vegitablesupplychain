@@ -78,7 +78,7 @@ class SellOrders(models.Model):
     order_status = models.CharField(max_length=10,default=str('In Stock'))
     is_shipped = models.BooleanField(default=False)
     created_on = models.DateTimeField(auto_now_add=True)
-    shipping_address = models.ForeignKey(Address)
+    shipping_address = models.ForeignKey(Address, null=True)
 
 
 class CartItem(models.Model):

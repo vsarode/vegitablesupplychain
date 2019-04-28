@@ -2,8 +2,6 @@ from vegitablesupplychain.db.supplychainmodels.models import User, \
     Farmer, Hotel, Address
 from vegitablesupplychain.utils.exceptions import AlreadyExist, \
     NotFoundException, UnauthorisedException
-from vegitablesupplychain.view.user_view import HotelUserView, FarmerView, \
-    UserView, AddressView
 
 
 def check_user_exist(request_data):
@@ -88,16 +86,6 @@ def get_user_by_filter(criteria={}):
     return User.objects.filter(**criteria)
 
 
-def get_hotel_user_json(hotel_obj):
-    view = HotelUserView()
-    return view.render(hotel_obj)
-
-
-def get_user_json(user_obj):
-    view = FarmerView()
-    return view.render(user_obj)
-
-
 def update_farmer_data(object, request_data):
     object.user.password = request_data["password"]
     object.user.mobile = request_data["mobile"]
@@ -132,11 +120,6 @@ def create_address_object(request_data):
         village=request_data['village'],
         pincode=request_data['pincode'],
     )
-
-
-def get_address_json(obj):
-    view = AddressView()
-    return view.render(obj)
 
 
 def get_address_object_by_id(id):

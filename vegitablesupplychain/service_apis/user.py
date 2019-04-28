@@ -10,6 +10,7 @@ from vegitablesupplychain.db.supplychainmodels.models import Farmer
 from vegitablesupplychain.service_apis_handler import user_handler
 from vegitablesupplychain.utils.exceptions import AlreadyExist
 from vegitablesupplychain.utils.resource import BaseResource
+from vegitablesupplychain.view.user_view import FarmerView, HotelUserView
 
 
 class UserApi(BaseResource):
@@ -23,16 +24,18 @@ class UserApi(BaseResource):
             file.save(os.path.join(file_path.FILE_PATH, filename))
         request_data['profilePic'] = filename
         user_object = user_handler.create_user_profile(request_data)
-        if isinstance(user_object,Farmer):
-            return user_handler.get_user_json(user_object)
-        else:
-            return user_handler.get_hotel_user_json(user_object)
+        if isinstance(user_object, Farmer):
+            view = FarmerView()
 
+            return view.render(user_object)
+        else:
+            view = HotelUserView()
+            return view.render(user_object)
 
     def get(self, username=None):
         if username:
             user_object = user_handler.get_user_profile(username)
-            if isinstance(user_object,Farmer):
+            if isinstance(user_object, Farmer):
                 return user_handler.get_user_json(user_object)
             else:
                 return user_handler.get_hotel_user_json(user_object)
@@ -57,9 +60,11 @@ class UserApi(BaseResource):
         request_data = request.form.to_dict()
         request_data['profilePic'] = filename
         user_object = user_handler.get_user_profile(username)
-        if isinstance(user_object,Farmer):
-            user_object = user_handler.update_farmer_data(user_object, request_data)
+        if isinstance(user_object, Farmer):
+            user_object = user_handler.update_farmer_data(user_object,
+                                                          request_data)
             return user_handler.get_user_json(user_object)
         else:
-            user_object = user_handler.update_hotel_data(user_object, request_data)
+            user_object = user_handler.update_hotel_data(user_object,
+                                                         request_data)
             return user_handler.get_hotel_user_json(user_object)

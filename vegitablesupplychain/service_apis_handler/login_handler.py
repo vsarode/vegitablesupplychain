@@ -1,5 +1,4 @@
-from vegitablesupplychain.db.supplychainmodels.models import Login
-from vegitablesupplychain.service_apis_handler import user_handler
+from vegitablesupplychain.db.supplychainmodels.models import Login, User
 from vegitablesupplychain.utils.exceptions import NotFoundException
 from vegitablesupplychain.view.login_view import LoginView
 
@@ -25,7 +24,7 @@ def get_login_object_by_token(token):
 def get_user_object_by_token(token):
     try:
         login_obj = Login.objects.get(login_token=token)
-        return user_handler.get_user_profile(login_obj.user.username)
+        return User.objects.get(username=login_obj.user_username)
     except:
         raise NotFoundException(token)
 

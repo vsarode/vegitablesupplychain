@@ -1,8 +1,6 @@
 from marshmallow import fields
-
-from vegitablesupplychain.constants import file_path
 from vegitablesupplychain.view.base_schema import SchemaRender
-
+from vegitablesupplychain.db.supplychainmodels.models import Farmer, Hotel
 
 class AddressView(SchemaRender):
     id = fields.Integer(dump_to="addressId")
@@ -24,13 +22,12 @@ class UserBasic(SchemaRender):
     def get_profile_pic_url(self, obj):
         return '/data/' + obj.photo
 
+
 class UserView(UserBasic):
     account_no = fields.String(dump_to="accountNumber")
     pan_no = fields.String(dump_to="panNumber")
     shipping_addresses = fields.Method('get_addresses',
                                        dump_to="shippingAddresses")
-
-
     def get_addresses(self, obj):
         addresses = obj.shipping_addresses.all()
         view = AddressView()
@@ -45,7 +42,17 @@ class FarmerView(SchemaRender):
     user = fields.Nested(UserBasic)
 
 
+class FarmerFullView(SchemaRender):
+    user = fields.Nested(UserView)
+
+
 class HotelUserView(SchemaRender):
+    user = fields.Nested(UserBasic)
+    hotel_name = fields.String(dump_to="hotelName")
+    gstn_no = fields.String(dump_to="gstnNumber")
+
+
+class HotelFullView(SchemaRender):
     user = fields.Nested(UserView)
     hotel_name = fields.String(dump_to="hotelName")
     gstn_no = fields.String(dump_to="gstnNumber")
@@ -58,8 +65,13 @@ class HotelNameView(SchemaRender):
 
 if __name__ == '__main__':
     import json
+
     view = UserBasic()
-    import django; django.setup()
-    from vegitablesupplychain.db.supplychainmodels.models import User
+    import django;
+
+    django.setup()
+    from vegitablesupplychain.db.supplychainmodels.models import User, Cart, \
+        Hotel, Farmer
+
     user = User.objects.get(username='test5@mail.com')
     print json.dumps(view.render(user))

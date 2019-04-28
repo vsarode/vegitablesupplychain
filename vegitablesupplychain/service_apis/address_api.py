@@ -3,6 +3,7 @@ from flask import request
 from vegitablesupplychain.service_apis_handler import user_handler, \
     login_handler
 from vegitablesupplychain.utils.resource import BaseResource
+from vegitablesupplychain.view.user_view import AddressView
 
 
 class AddressApi(BaseResource):
@@ -12,7 +13,8 @@ class AddressApi(BaseResource):
         user_obj = user_handler.get_user_profile(username)
         obj = user_handler.create_address_object(request_data['address'])
         user_obj.user.shipping_addresses.add(obj)
-        return user_handler.get_address_json(obj)
+        view = AddressView()
+        return view.render(obj)
 
     def get(self):
         data = request.args
