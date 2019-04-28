@@ -1,6 +1,7 @@
 from marshmallow import fields
+
 from vegitablesupplychain.view.base_schema import SchemaRender
-from vegitablesupplychain.db.supplychainmodels.models import Farmer, Hotel
+
 
 class AddressView(SchemaRender):
     id = fields.Integer(dump_to="addressId")
@@ -28,6 +29,13 @@ class UserView(UserBasic):
     pan_no = fields.String(dump_to="panNumber")
     shipping_addresses = fields.Method('get_addresses',
                                        dump_to="shippingAddresses")
+    userType = fields.Method('get_user_type')
+
+    def get_user_type(self, obj):
+        from vegitablesupplychain.db.supplychainmodels.models import Farmer
+        return 'Farmer' if Farmer.objects.filter(
+            user_id=obj.username) else 'Hotel'
+
     def get_addresses(self, obj):
         addresses = obj.shipping_addresses.all()
         view = AddressView()
@@ -47,12 +55,6 @@ class FarmerFullView(SchemaRender):
 
 
 class HotelUserView(SchemaRender):
-    user = fields.Nested(UserBasic)
-    hotel_name = fields.String(dump_to="hotelName")
-    gstn_no = fields.String(dump_to="gstnNumber")
-
-
-class HotelFullView(SchemaRender):
     user = fields.Nested(UserView)
     hotel_name = fields.String(dump_to="hotelName")
     gstn_no = fields.String(dump_to="gstnNumber")
@@ -70,8 +72,7 @@ if __name__ == '__main__':
     import django;
 
     django.setup()
-    from vegitablesupplychain.db.supplychainmodels.models import User, Cart, \
-        Hotel, Farmer
+    from vegitablesupplychain.db.supplychainmodels.models import User, Farmer
 
     user = User.objects.get(username='test5@mail.com')
     print json.dumps(view.render(user))
