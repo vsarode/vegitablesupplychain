@@ -87,6 +87,8 @@ def get_user_by_filter(criteria={}):
 
 
 def update_farmer_data(object, request_data):
+    if 'fullName' in request_data:
+        object.user.fullname = request_data['fullName']
     if 'password' in request_data:
         object.user.password = request_data["password"]
     if 'mobile' in request_data:
