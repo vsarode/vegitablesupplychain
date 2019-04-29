@@ -19,14 +19,15 @@ class AddressApi(BaseResource):
     def get(self):
         data = request.args
         username = data['userId']
+        view = AddressView()
+
         if username:
             addresses = user_handler.get_addresses_by_username(username)
             return {
-                "address": [user_handler.get_address_json(adr) for
+                "address": [view.render(adr) for
                             adr
                             in addresses]}
         token = request.headers.get('token')
-        view = AddressView()
 
         if token:
             user_obj = login_handler.get_user_object_by_token(token)
@@ -36,7 +37,7 @@ class AddressApi(BaseResource):
                 "address": [view.render(adr) for
                             adr
                             in addresses]}
-        address_id = request.headers.get('addressId')
+        address_id = data.get('addressId')
         if address_id:
             address_obj = user_handler.get_address_object_by_id(address_id)
             return {'address': view.render(address_obj)}
