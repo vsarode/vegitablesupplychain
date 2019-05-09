@@ -73,9 +73,10 @@ class SellOrders(models.Model):
     farmer = models.ForeignKey(Farmer)
     product = models.ForeignKey(Product)
     quantity = models.IntegerField(default=1)
+    price = models.FloatField()
     total_price = models.FloatField()
     product_image = models.CharField(max_length=512)
-    order_status = models.CharField(max_length=10,default=str('In Stock'))
+    order_status = models.CharField(max_length=10, default=str('In Stock'))
     is_shipped = models.BooleanField(default=False)
     created_on = models.DateTimeField(auto_now_add=True)
     shipping_address = models.ForeignKey(Address, null=True)
@@ -91,7 +92,7 @@ class Cart(models.Model):
     hotel = models.ForeignKey(Hotel)
     cart_items = models.ManyToManyField(CartItem)
     created_on = models.DateTimeField(auto_now_add=True)
-    total_item_price = models.FloatField()
+    total_item_price = models.FloatField(null=True,default=0)
     is_active = models.BooleanField(default=True)
 
 

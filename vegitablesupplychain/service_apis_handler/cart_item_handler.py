@@ -7,7 +7,9 @@ def create_cart_item(data):
     sell_order_object = sell_handler.get_order_by_token(
         data['sellOrderToken'])
     cart_item_object = CartItem.objects.create(sell_order=sell_order_object,
-                                               price=data['price'])
+                                               price=sell_order_object.price)
+    sell_order_object.is_shipped=True
+    sell_order_object.save()
     return cart_item_object
 
 

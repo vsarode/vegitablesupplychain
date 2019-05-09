@@ -11,11 +11,11 @@ def place_purchase_order(request_data):
     cart_obj = cart_handler.get_cart_for_hotel(hotel_obj.user.username)
 
     purchase_order_obj = PurchaseOrders.objects.create(hotel=hotel_obj,cart=cart_obj,
-                                              total_price=request_data[
-                                                  'totalPrice'],
+                                              total_price=cart_obj.total_item_price,
                                               shipping_address=user_handler.get_address_object_by_id(
                                                   request_data['addressId']))
     post_purchase_order_action(cart_obj)
+
     return purchase_order_obj
 
 

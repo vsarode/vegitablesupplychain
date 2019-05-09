@@ -6,7 +6,8 @@ from werkzeug.utils import secure_filename
 from vegitablesupplychain.constants import file_path
 from vegitablesupplychain.db.supplychainmodels.models import SellOrders, Farmer
 from vegitablesupplychain.service_apis_handler import sell_handler, user_handler
-from vegitablesupplychain.utils.exceptions import AlreadyExist
+from vegitablesupplychain.utils.exceptions import AlreadyExist, \
+    GenericCustomException
 from vegitablesupplychain.utils.resource import BaseResource
 
 
@@ -32,8 +33,8 @@ class SellOrderApi(BaseResource):
                  "SellOrders": [sell_handler.get_order_json(order) for order
                                 in orders]}
         else:
-            orders = sell_handler.get_in_stock_products()
-            return {"Products":[sell_handler.get_order_json(order) for order
+            orders = sell_handler.get_in_stock_products(data)
+            return {"Products":[sell_handler.get_order_response_for_hotel(order, user_object) for order
                                 in orders]}
 
     # def put(self):
@@ -49,5 +50,7 @@ class SellOrderApi(BaseResource):
 
     def delete(self, sale_order_id):
         order_obj = sell_handler.get_order_by_token(sale_order_id)
+        if order_obj.is_shipped:
+            raise GenericCustomException(message="Can't delete Already purchase by customer !!")
         order_obj.delete()
         return {"Result": "Order canceled"}

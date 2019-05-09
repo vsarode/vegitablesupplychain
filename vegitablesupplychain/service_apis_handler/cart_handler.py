@@ -1,6 +1,6 @@
-from vegitablesupplychain.db.supplychainmodels.models import CartItem, Cart
+from vegitablesupplychain.db.supplychainmodels.models import Cart
 from vegitablesupplychain.service_apis_handler import user_handler, \
-    product_handler, cart_item_handler
+    cart_item_handler
 from vegitablesupplychain.utils.exceptions import NotFoundException
 
 
@@ -8,8 +8,10 @@ def create_cart(request_data):
     hotel_object = user_handler.get_user_profile(request_data['userId'])
     cart_item_object = cart_item_handler.create_cart_item(
         request_data['cartItem'])
-    cart_object = Cart.objects.create(hotel=hotel_object,
-                                      total_item_price=cart_item_object.price)
+    cart_object, _ = Cart.objects.get_or_create(hotel=hotel_object,
+                                                is_active=True)
+    cart_object.total_item_price = cart_object.total_item_price + cart_item_object.price if cart_object.total_item_price else 0 + cart_item_object.price
+    cart_object.save()
     cart_object.cart_items.add(cart_item_object)
     return cart_object
 
@@ -35,20 +37,21 @@ def handle_update(request_data, cart_object):
     if action == 'INCREASE_QUANTITY':
         cart_item_object.quantity += 1
         cart_item_object.save()
-        cart_object.total_item_price = cart_item_object.price * cart_item_object.quantity
+        cart_object.total_item_price = cart_object.total_item_price + (
+                    cart_item_object.price * cart_item_object.quantity) if cart_object.total_item_price else 0 + (
+                    cart_item_object.price * cart_item_object.quantity)
         cart_object.save()
         return cart_object
     if action == 'DECREASE_QUANTITY':
         if cart_item_object.quantity == 1:
             cart_object.cart_items.remove(cart_item_object)
             if len(cart_object.cart_items.all()) == 0:
-                cart_object.is_active = False
-                cart_object.save()
+                cart_object.delete()
                 return None
             return cart_object
         else:
             cart_item_object.quantity -= 1
             cart_item_object.save()
-            cart_object.total_item_price = cart_item_object.price * cart_item_object.quantity
+            cart_object.total_item_price = cart_object.total_item_price - cart_item_object.price
             cart_object.save()
             return cart_object
