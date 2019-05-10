@@ -1,5 +1,6 @@
 from marshmallow import fields
 
+from vegitablesupplychain.constants.file_path import DOWNLOAD_PATH
 from vegitablesupplychain.view.base_schema import SchemaRender
 
 
@@ -21,7 +22,7 @@ class UserBasic(SchemaRender):
     photo = fields.Method('get_profile_pic_url', dump_to='photo')
 
     def get_profile_pic_url(self, obj):
-        return '/data/' + obj.photo
+        return DOWNLOAD_PATH + obj.photo
 
 
 class UserView(UserBasic):

@@ -1,6 +1,8 @@
 import django;
 from marshmallow import fields
 
+from vegitablesupplychain.constants.file_path import DOWNLOAD_PATH
+
 django.setup()
 from vegitablesupplychain.db.supplychainmodels.models import SellOrders
 from vegitablesupplychain.view.base_schema import SchemaRender, DateTimeEpoch
@@ -13,13 +15,16 @@ class SellOrderView(SchemaRender):
     farmer = fields.Nested(FarmerView, dump_to="farmerDetails")
     product = fields.Nested(ProductView)
     quantity = fields.Integer()
-    product_image = fields.String()
+    product_image = fields.Method('get_image')
     price = fields.Float()
     total_price = fields.Float(dump_to="totalPrice")
     is_shipped = fields.Boolean(dump_to="isShipped")
     created_on = DateTimeEpoch(dump_to="createdOn")
     order_status = fields.String(dump_to="orderStatus")
     shipping_address = fields.Nested(AddressView, dump_to="shippingAddress")
+
+    def get_image(self, obj):
+        return DOWNLOAD_PATH + obj.product_image
 
 
 if __name__ == '__main__':
