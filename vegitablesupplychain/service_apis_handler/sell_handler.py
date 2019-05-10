@@ -23,7 +23,6 @@ def place_sell_order(request_data):
 
     return order_obj
 
-
 def get_order_response_for_hotel(order_obj, hotel_object):
     view = SellOrderView()
     res = view.render(order_obj)

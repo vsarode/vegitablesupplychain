@@ -15,7 +15,8 @@ def place_purchase_order(request_data):
                                               shipping_address=user_handler.get_address_object_by_id(
                                                   request_data['addressId']))
     post_purchase_order_action(cart_obj)
-
+    cart_obj.is_active = False
+    cart_obj.save()
     return purchase_order_obj
 
 

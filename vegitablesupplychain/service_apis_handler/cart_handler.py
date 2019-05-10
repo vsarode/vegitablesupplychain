@@ -37,9 +37,7 @@ def handle_update(request_data, cart_object):
     if action == 'INCREASE_QUANTITY':
         cart_item_object.quantity += 1
         cart_item_object.save()
-        cart_object.total_item_price = cart_object.total_item_price + (
-                    cart_item_object.price * cart_item_object.quantity) if cart_object.total_item_price else 0 + (
-                    cart_item_object.price * cart_item_object.quantity)
+        cart_object.total_item_price = cart_object.total_item_price + cart_item_object.price  if cart_object.total_item_price else cart_item_object.price
         cart_object.save()
         return cart_object
     if action == 'DECREASE_QUANTITY':

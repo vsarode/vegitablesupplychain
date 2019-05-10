@@ -9,6 +9,7 @@ from vegitablesupplychain.service_apis_handler import sell_handler, user_handler
 from vegitablesupplychain.utils.exceptions import AlreadyExist, \
     GenericCustomException
 from vegitablesupplychain.utils.resource import BaseResource
+from vegitablesupplychain.view.sell_order_view import SellOrderView
 
 
 class SellOrderApi(BaseResource):
@@ -20,17 +21,19 @@ class SellOrderApi(BaseResource):
             file.save(os.path.join(file_path.FILE_PATH, filename))
         request_data['productPic'] = filename
         order = sell_handler.place_sell_order(request_data)
-        return sell_handler.get_order_json(order)
+        view = SellOrderView()
+        return view.render(order)
+
 
     def get(self):
         data = request.args
         username =data['userId']
         user_object = user_handler.get_user_profile(username)
         if isinstance(user_object, Farmer):
-            print "farmer*****"
             orders = sell_handler.get_order_by_username(username)
+            view = SellOrderView()
             return {
-                 "SellOrders": [sell_handler.get_order_json(order) for order
+                 "SellOrders": [view.render(order) for order
                                 in orders]}
         else:
             orders = sell_handler.get_in_stock_products(data)

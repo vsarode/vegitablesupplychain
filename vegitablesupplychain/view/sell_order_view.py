@@ -18,6 +18,7 @@ class SellOrderView(SchemaRender):
     total_price = fields.Float(dump_to="totalPrice")
     is_shipped = fields.Boolean(dump_to="isShipped")
     created_on = DateTimeEpoch(dump_to="createdOn")
+    order_status = fields.String(dump_to="orderStatus")
     shipping_address = fields.Nested(AddressView, dump_to="shippingAddress")
 
 
