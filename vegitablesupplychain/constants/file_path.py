@@ -1,2 +1,2 @@
-FILE_PATH = '/tmp'
-DOWNLOAD_PATH ='/data/'
+FILE_PATH = '/tmp/veg'
+DOWNLOAD_PATH ='/vegdata/'
