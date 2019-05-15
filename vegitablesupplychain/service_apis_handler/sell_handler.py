@@ -10,7 +10,7 @@ from vegitablesupplychain.view.sell_order_view import SellOrderView
 def place_sell_order(request_data):
     farmer_obj = user_handler.get_user_profile(request_data['userId'])
     order_obj = SellOrders.objects.create(farmer=farmer_obj,
-                                          sell_order_token=uuid.uuid4(),
+                                          sell_order_token=str(uuid.uuid4()),
                                           product=product_handler.get_product_by_id(
                                               request_data['productId']),
                                           quantity=request_data['quantity'],

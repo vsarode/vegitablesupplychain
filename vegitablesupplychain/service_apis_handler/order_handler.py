@@ -1,3 +1,5 @@
+import uuid
+
 from vegitablesupplychain.db.supplychainmodels.models import PurchaseOrders, \
     CartItem, SellOrders
 from vegitablesupplychain.service_apis_handler import product_handler, \
@@ -10,10 +12,14 @@ def place_purchase_order(request_data):
     hotel_obj = user_handler.get_user_profile(request_data['userId'])
     cart_obj = cart_handler.get_cart_for_hotel(hotel_obj.user.username)
 
-    purchase_order_obj = PurchaseOrders.objects.create(hotel=hotel_obj,cart=cart_obj,
-                                              total_price=cart_obj.total_item_price,
-                                              shipping_address=user_handler.get_address_object_by_id(
-                                                  request_data['addressId']))
+    purchase_order_obj = PurchaseOrders.objects.create(hotel=hotel_obj,
+                                                       cart=cart_obj,
+                                                       purchase_order_token=str(
+                                                           uuid.uuid4()),
+                                                       total_price=cart_obj.total_item_price,
+                                                       shipping_address=user_handler.get_address_object_by_id(
+                                                           request_data[
+                                                               'addressId']))
     post_purchase_order_action(cart_obj)
     cart_obj.is_active = False
     cart_obj.save()
