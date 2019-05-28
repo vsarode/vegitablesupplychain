@@ -26,12 +26,14 @@ class User(models.Model):
     mobile = models.CharField(max_length=12)
     pan_no = models.CharField(max_length=12)
     account_no = models.CharField(max_length=15)
+    ifsc_code = models.CharField(max_length=15)
     shipping_addresses = models.ManyToManyField(Address)
     photo = models.CharField(max_length=1024, null=True)
 
 
 class Farmer(models.Model):
     user = models.ForeignKey(User)
+    firm_name = models.CharField(max_length=255)
 
 
 class Hotel(models.Model):
@@ -49,18 +51,8 @@ class Login(models.Model):
     is_logged_in = models.BooleanField(default=True)
 
 
-class Category(models.Model):
-    category_name = models.CharField(max_length=255, primary_key=True)
-
-
-class Brand(models.Model):
-    brand_name = models.CharField(max_length=255, primary_key=True)
-
-
 class Product(models.Model):
     product_name = models.CharField(max_length=255)
-    category = models.ForeignKey(Category)
-    brand = models.ForeignKey(Brand)
     default_image = models.CharField(max_length=512, null=True)
     features = models.CharField(max_length=512, null=True)
     price = models.FloatField(max_length=10, null=False)
@@ -73,6 +65,7 @@ class SellOrders(models.Model):
     farmer = models.ForeignKey(Farmer)
     product = models.ForeignKey(Product)
     quantity = models.IntegerField(default=1)
+    quality = models.CharField(max_length=10, default=str('Good'))
     price = models.FloatField()
     total_price = models.FloatField()
     product_image = models.CharField(max_length=512)

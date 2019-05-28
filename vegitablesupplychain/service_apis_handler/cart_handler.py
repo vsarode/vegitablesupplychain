@@ -42,10 +42,13 @@ def handle_update(request_data, cart_object):
         return cart_object
     if action == 'DECREASE_QUANTITY':
         if cart_item_object.quantity == 1:
+            cart_object.total_item_price = cart_object.total_item_price - cart_item_object.price
+            cart_object.save()
             cart_object.cart_items.remove(cart_item_object)
             if len(cart_object.cart_items.all()) == 0:
                 cart_object.delete()
                 return None
+
             return cart_object
         else:
             cart_item_object.quantity -= 1

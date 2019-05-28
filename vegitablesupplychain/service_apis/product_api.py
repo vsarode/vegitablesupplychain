@@ -16,11 +16,6 @@ class ProductApi(BaseResource):
         req_filter={}
         if 'productName' in criteria:
             req_filter['product_name'] = criteria['productName']
-        if 'categoryName' in criteria:
-            req_filter['category__category_name'] = criteria['categoryName']
-        if 'brandName' in criteria:
-            req_filter['brand__brand_name'] = criteria['brandName']
-
         products = product_handler.get_product_by_filter(req_filter)
         return {'Products':[product_handler.get_product_json(product_obj) for product_obj in products]}
 

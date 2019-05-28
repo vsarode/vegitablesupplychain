@@ -16,6 +16,7 @@ class SellOrderView(SchemaRender):
     product = fields.Nested(ProductView)
     quantity = fields.Integer()
     product_image = fields.Method('get_image')
+    quality = fields.String()
     price = fields.Float()
     total_price = fields.Float(dump_to="totalPrice")
     is_shipped = fields.Boolean(dump_to="isShipped")

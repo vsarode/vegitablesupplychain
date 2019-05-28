@@ -24,7 +24,7 @@ def create_user_profile(request_data):
         user_type = request_data['userType']
         if user_type == 'Farmer':
             return Farmer.objects.create(
-                user=create_user_object(request_data))
+                user=create_user_object(request_data),firm_name=request_data['firmName'])
         else:
             return Hotel.objects.create(user=create_user_object(request_data),
                                         hotel_name=request_data['hotelName'],
@@ -39,6 +39,7 @@ def create_user_object(request_data):
         user_obj.password = request_data['password']
         user_obj.pan_no = request_data['panNumber']
         user_obj.account_no = request_data['accountNumber']
+        user_obj.ifsc_code = request_data['ifscCode']
         user_obj.fullname = request_data['fullName']
         user_obj.mobile = request_data['mobile']
         user_obj.photo = request_data['profilePic']
@@ -95,10 +96,14 @@ def update_farmer_data(object, request_data):
         object.user.mobile = request_data["mobile"]
     if 'accountNumber' in request_data:
         object.user.account_no = request_data["accountNumber"]
+    if 'ifscCode' in request_data:
+        object.user.ifsc_code = request_data["ifscCode"]
     if 'panNumber' in request_data:
         object.user.pan_no = request_data["panNumber"]
     if 'profilePic' in request_data:
         object.user.photo = request_data["profilePic"]
+    if 'firmName' in request_data:
+        object.firm_name = request_data["firmName"]
     # update_addresses_of_user(username, request_data)
     object.user.save()
     return object
@@ -111,6 +116,8 @@ def update_hotel_data(object, request_data):
         object.user.mobile = request_data["mobile"]
     if 'accountNumber' in request_data:
         object.user.account_no = request_data["accountNumber"]
+    if 'ifscCode' in request_data:
+        object.user.ifsc_code = request_data["ifscCode"]
     if 'panNumber' in request_data:
         object.user.pan_no = request_data["panNumber"]
     if 'profilePic' in request_data:

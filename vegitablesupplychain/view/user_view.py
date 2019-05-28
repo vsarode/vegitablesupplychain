@@ -27,6 +27,7 @@ class UserBasic(SchemaRender):
 
 class UserView(UserBasic):
     account_no = fields.String(dump_to="accountNumber")
+    ifsc_code = fields.String(dump_to="ifscCode")
     pan_no = fields.String(dump_to="panNumber")
     shipping_addresses = fields.Method('get_addresses',
                                        dump_to="shippingAddresses")
@@ -53,6 +54,7 @@ class FarmerView(SchemaRender):
 
 class FarmerFullView(SchemaRender):
     user = fields.Nested(UserView)
+    firm_name = fields.String(dump_to="firmName")
 
 
 class HotelUserView(SchemaRender):
