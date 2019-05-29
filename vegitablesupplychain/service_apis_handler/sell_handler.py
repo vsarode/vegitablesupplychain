@@ -19,8 +19,6 @@ def place_sell_order(request_data):
                                               'productPic'],
                                           price=request_data[
                                               'price'],
-                                          shipping_address=user_handler.get_address_object_by_id(
-                                              request_data['addressId']),
                                           total_price=float(request_data[
                                               'price'])*int(request_data['quantity']))
 
